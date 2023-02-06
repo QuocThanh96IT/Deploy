@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  server:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: finez_server
+    command: python manage.py runserver 0.0.0.0:8000
+    networks:
+      - finez_network
+    volumes:
+      - ./backend/:/usr/src/app/
+    ports:
+      - 8000:8000
+  
+  db:
+    image: postgres:13-alpine
+    container_name: finez_db
+    restart: always
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+
+networks:
+  finez_network:
+    driver: bridge
