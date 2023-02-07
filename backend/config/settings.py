@@ -29,26 +29,26 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY =  env("SECRET_KEY")
-SECRET_KEY = os.environ.get('SECRET_KEY')
+# SECRET_KEY = foo
 
-# SECRET_KEY = 'django-insecure-pj4g0^$mon@_v#q6vw&22(9^h3u0-+c%$nv)gssqhzp%b8q_$_'
+SECRET_KEY = 'django-insecure-pj4g0^$mon@_v#q6vw&22(9^h3u0-+c%$nv)gssqhzp%b8q_$_'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = env("DEBUG")
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(int(os.environ.get('DEBUG', 0)))
-# DEBUG = True
+# DEBUG = bool(int(os.environ.get('DEBUG', 0)))
+DEBUG = True
 
 # ALLOWED_HOSTS = ['*']
 CSRF_TRUSTED_ORIGINS = ['https://http://13.231.223.197']
-ALLOWED_HOSTS = []
-ALLOWED_HOSTS.extend(
-    filter(
-        None,
-        os.environ.get('ALLOWED_HOSTS', '').split(','),
-    )
-)
-
+# ALLOWED_HOSTS = []
+# ALLOWED_HOSTS.extend(
+#     filter(
+#         None,
+#         os.environ.get('ALLOWED_HOSTS', '').split(','),
+#     )
+# )
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -117,10 +117,10 @@ DATABASES = {
     'default': {
         # 'ENGINE': 'django.db.backends.postgresql',
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'HOST': os.environ.get('DB_HOST'),
-        'NAME': os.environ.get('DB_NAME'),
-        'USER': os.environ.get('DB_USER'),
-        'PASSWORD': os.environ.get('DB_PASS'),
+        'HOST': 'ec2-3-113-15-67.ap-northeast-1.compute.amazonaws.com',
+        'NAME': 'djangoec2',
+        'USER': 'master',
+        'PASSWORD': 'quocthanh9a1',
     }
 }
 
