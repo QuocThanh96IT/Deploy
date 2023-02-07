@@ -5,14 +5,19 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile.dev
+    image: 463482854100.dkr.ecr.us-east-1.amazonaws.com/django-ec2:web
     container_name: finez_server
     command: python manage.py runserver 0.0.0.0:8000
     networks:
       - finez_network
     volumes:
       - ./backend/:/usr/src/app/
-    ports:
-      - 8000:8000
+    expose:
+      - 8000
+    env_file:
+      - ./.env.staging
+    depends_on:
+      - db
   
   db:
     image: postgres:13-alpine
@@ -20,11 +25,48 @@ services:
     restart: always
     volumes:
       - postgres-data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=${DB_NAME}
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASS}
+    env_file:
+      - ./.env.staging.db
+
+  nginx-proxy:
+    container_name: nginx-proxy
+    build: nginx
+    image: 463482854100.dkr.ecr.us-east-1.amazonaws.com/django-ec2:web
+    restart: always
+    ports:
+      - 443:443
+      - 80:80
+    volumes:
+      - static_volume:/home/app/web/staticfiles
+      - media_volume:/home/app/web/mediafiles
+      - certs:/etc/nginx/certs
+      - html:/usr/share/nginx/html
+      - vhost:/etc/nginx/vhost.d
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    depends_on:
+      - web
+  nginx-proxy-letsencrypt:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    env_file:
+      - ./.env.staging.proxy-companion
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - certs:/etc/nginx/certs
+      - html:/usr/share/nginx/html
+      - vhost:/etc/nginx/vhost.d
+      - acme:/etc/acme.sh
+    depends_on:
+      - nginx-proxy
 
 networks:
   finez_network:
     driver: bridge
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
+  certs:
+  html:
+  vhost:
+  acme:
